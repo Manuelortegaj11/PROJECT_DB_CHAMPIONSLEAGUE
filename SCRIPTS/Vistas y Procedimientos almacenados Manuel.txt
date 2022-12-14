@@ -1,0 +1,58 @@
+create view RankingCopas
+as
+
+select nombre, copas
+from Equipos
+order by copas asc
+
+create view RegistroJugadores
+as
+select tiemporegistro, dorsal, concat(nombre, ' ' , apellido ) as "nombre completo"
+from registros
+inner join jugadores on jugadores.idpersona = registros.idpersona
+inner join personas on personas.idpersona = registros.idpersona
+
+create view CantidadDeEstadiosYnombre
+as
+select nombreciudad, count(estadios.nombre) as "cantidad de estadios"
+from estadios
+inner join ciudades on ciudades.idciudad = estadios.idciudad
+group by nombreciudad
+
+
+CREATE PROCEDURE insertarEquipo (nombre VARCHAR(20),numeroCopas INT, idEtapas INT, idPais INT )
+AS
+$CODE$
+RAISE NOTICE 'Insertando equipo' ;
+INSERT INTO Equipos (nombre,copas,idEtapa,idPais)  VALUES (nombre,numeroCopas,idEtapas,idPais);
+RAISE NOTICE 'Equipo Insertado';
+END
+$CODE$
+LANGUAGE 'plpgsql'; 
+
+
+CREATE PROCEDURE insertarMejorMomento (idPartido INT,idTipoMultimedia INT)
+AS
+$CODE$
+RAISE NOTICE  'Insertando mejor Momento';
+ 
+INSERT INTO MejoresMomentos (idPartido,idTipoMultimedia)  VALUES ( idPartido,idTipoMultimedia );
+RAISE NOTICE 'Mejor Momento Insertado';
+END
+$CODE$
+LANGUAGE 'plpgsql'; 
+
+
+
+CREATE PROCEDURE InsertarCiudad (nombre VARCHAR(20),idPais INT)
+AS 
+$CODE$
+RAISE NOTICE 'iNSERTANDO CIUDAD';
+INSERT INTO Ciudades (nombre,idPais) VALUES (nombre,idPais);
+RAISE NOTICE 'CIUDAD INSERTADA';
+
+END
+$CODE$
+LANGUAGE 'plpgsql'; 
+
+

@@ -1,0 +1,617 @@
+CREATE TABLE Fotos(
+	idFoto SERIAL PRIMARY KEY,
+	enlaceFoto VARCHAR(500)
+);
+
+CREATE TABLE Personas(
+	idPersona SERIAL PRIMARY KEY,
+	nombre VARCHAR(20) NOT NULL,
+	apellido VARCHAR(20) NOT NULL,
+	idFoto INTEGER NULL,
+	FOREIGN KEY (idFoto) REFERENCES Fotos(idFoto)
+);
+
+
+CREATE TABLE Etapas(
+	idEtapa SERIAL PRIMARY KEY,
+	nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE TiposEstadoJugador(
+	idTiposEstadoJugador SERIAL PRIMARY KEY,
+	nombre VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE Climas(
+	idClima SERIAL PRIMARY KEY,
+	ambiente VARCHAR (20) NOT NULL,
+	viento VARCHAR (20)  NOT NULL,
+	humedad VARCHAR (20) NOT NULL,
+	estadoCampo VARCHAR (20) NOT NULL
+);
+
+CREATE TABLE TiposEstadoPartido(
+	idTiposEstadoPartido SERIAL PRIMARY KEY,
+	nombre VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE TiposMultimedia(
+	idTipoMultimedia SERIAL PRIMARY KEY,
+	nombre VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE TipoAcciones(
+	idTipoAccion SERIAL PRIMARY KEY,
+	nombre VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE JuecesRoles(
+	idRol SERIAL PRIMARY KEY,
+	nombre VARCHAR(50)
+);
+
+CREATE TABLE Paises(
+	idPais SERIAL PRIMARY KEY,
+	nombrePais VARCHAR(25)
+);
+
+CREATE TABLE Ciudades(
+	idCiudad SERIAL PRIMARY KEY,
+	nombreCiudad VARCHAR(20),
+	idPais INTEGER NOT NULL,
+	FOREIGN KEY (idPais) REFERENCES Paises(idPais)
+);
+
+
+
+
+CREATE TABLE Equipos(
+	idEquipo SERIAL PRIMARY KEY,
+	nombre VARCHAR (50) NOT NULL,
+	copas INTEGER NOT NULL,
+	idEtapa INTEGER NOT NULL,
+	idPais INTEGER NOT NULL,
+	FOREIGN KEY (idEtapa) REFERENCES Etapas(idEtapa),
+	FOREIGN KEY (idPais) REFERENCES Paises(idPais)
+);
+
+CREATE TABLE Jugadores(
+	idPersona INTEGER PRIMARY KEY,
+	dorsal INTEGER NOT NULL,
+	idEquipo INTEGER NOT NULL,
+	FOREIGN KEY (idPersona) REFERENCES Personas(idPersona),
+	FOREIGN KEY (idEquipo) REFERENCES Equipos(idEquipo)
+);
+
+
+
+
+
+CREATE TABLE Entrenadores(
+	idPersona INTEGER PRIMARY KEY,
+	añosExperiencia INTEGER,
+	idEquipo INTEGER NOT NULL,
+	FOREIGN KEY (idPersona) REFERENCES Personas(idPersona),
+	FOREIGN KEY (idEquipo) REFERENCES Equipos(idEquipo)
+);
+
+CREATE TABLE Jueces(
+	idPersona INTEGER PRIMARY KEY,
+	idRol INTEGER NOT NULL,
+	FOREIGN KEY (idRol) REFERENCES JuecesRoles(idRol),
+	FOREIGN KEY (idPersona) REFERENCES Personas(idPersona)
+);
+
+CREATE TABLE EstadosJugador(
+	idEstadoJugador SERIAL PRIMARY KEY,
+	fechaInicio DATE NOT NULL,
+	fechaFin DATE NOT NULL,
+	idPersona INTEGER NOT NULL,
+	idTiposEstadoJugador INTEGER NOT NULL,
+	FOREIGN KEY (idPersona) REFERENCES Jugadores(idPersona),
+	FOREIGN KEY (idTiposEstadoJugador) REFERENCES TiposEstadoJugador(idTiposEstadoJugador)
+);
+
+
+
+CREATE TABLE Acciones(
+	idAccion SERIAL PRIMARY KEY,
+	idTipoAccion INTEGER NOT NULL,
+	nombreAccion VARCHAR(40),
+	FOREIGN KEY (idTipoAccion) REFERENCES TipoAcciones(idTipoAccion)
+);
+
+
+CREATE TABLE Estadios(
+	idEstadio SERIAL PRIMARY KEY,
+	nombre VARCHAR(50) NOT NULL,
+	idCiudad INTEGER NOT NULL,
+	idFoto INTEGER NOT NULL,
+	FOREIGN KEY (idCiudad) REFERENCES Ciudades(idCiudad),
+	FOREIGN KEY (idFoto) REFERENCES Fotos(idFoto)
+);
+
+CREATE TABLE TipoPartido(
+	idTipoPartido SERIAL PRIMARY KEY,
+	nombreTipoPartido VARCHAR(20)
+);
+
+CREATE TABLE Partidos(
+	idPartido SERIAL PRIMARY KEY,
+	fecha DATE NOT NULL,
+	idEstadio INTEGER NOT NULL,
+	idClima INTEGER NOT NULL,
+	idTipoPartido INTEGER NOT NULL,
+	FOREIGN KEY (idTipoPartido) REFERENCES TipoPartido(idTipoPartido),
+	FOREIGN KEY (idEstadio) REFERENCES Estadios(idEstadio),
+	FOREIGN KEY (idClima) REFERENCES Climas(idClima)
+);
+
+
+
+CREATE TABLE RegistrosEstadoPartido(
+	idRegistrosEstadoPartido SERIAL PRIMARY KEY,
+	fechaRegistroPartido DATE NOT NULL,
+	fechaFinRegistroPartido DATE,
+	fechaInicioPartido DATE NOT NULL,
+	fechaFinPartido DATE,
+	idPartido INTEGER NOT NULL,
+	idTiposEstadoPartido INTEGER NOT NULL,
+	FOREIGN KEY (idPartido) REFERENCES Partidos(idPartido),
+	FOREIGN KEY (idTiposEstadoPartido) REFERENCES TiposEstadoPartido(idTiposEstadoPartido)
+);
+
+CREATE TABLE Registros(
+	idRegistro SERIAL PRIMARY KEY,
+	tiempoRegistro TIME NOT NULL,
+	idPartido INTEGER NOT NULL,
+	idAccion INTEGER NOT NULL,
+	idPersona INTEGER NOT NULL,
+	FOREIGN KEY (idPartido) REFERENCES Partidos(idPartido),
+	FOREIGN KEY (idAccion) REFERENCES Acciones(idAccion),
+	FOREIGN KEY (idPersona) REFERENCES Jugadores(idPersona)
+);
+
+
+
+
+
+
+CREATE TABLE MejoresMomentos(
+	idMejorMomento SERIAL PRIMARY KEY,
+	idPartido INTEGER NOT NULL,
+	idTipoMultimedia INTEGER NOT NULL,
+	FOREIGN KEY (idPartido) REFERENCES Partidos(idPartido),
+	FOREIGN KEY (idTipoMultimedia) REFERENCES TiposMultimedia(idTipoMultimedia)
+);
+
+CREATE TABLE TiposEstadoEquipo(
+	idTiposEstadoEquipo SERIAL PRIMARY KEY,
+	nombreEstadoEquipo VARCHAR(30)
+);
+
+CREATE TABLE EstadosEquipo(
+	idEstadoEquipo SERIAL PRIMARY KEY,
+	fechaInicioEstado DATE NOT NULL,
+	fechaFinEstado DATE,
+	idEquipo INTEGER NOT NULL,
+	idTiposEstadoEquipo INTEGER NOT NULL,
+	FOREIGN KEY (idEquipo) REFERENCES Equipos(idEquipo),
+	FOREIGN KEY (idTiposEstadoEquipo) REFERENCES TiposEstadoEquipo(idTiposEstadoEquipo)
+);
+
+
+CREATE TABLE Participaciones(
+	iDPartido INTEGER,
+	idEquipo INTEGER,
+	PRIMARY KEY (iDPartido,idEquipo),
+	FOREIGN KEY (idPartido) REFERENCES Partidos(idPartido),
+	FOREIGN KEY (idEquipo) REFERENCES Equipos(idEquipo)
+);
+
+CREATE TABLE PartidosJuzgados(
+	 idPartido  INTEGER,
+	idPersona INTEGER,
+	PRIMARY KEY (idPartido,idPersona),
+	FOREIGN KEY (idPartido) REFERENCES Partidos(idPartido),
+	FOREIGN KEY (idPersona) REFERENCES Jueces(idPersona)
+);
+
+
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://editorial.uefa.com/resources/0279-16098612aea0-f5888d1754d7-1000/format/wide1/ufa_champions_league_final_2023_stadium_and_trophy_feature.jpeg?imwidth=2048');
+INSERT INTO  Fotos (enlaceFoto) VALUES ('https://editorial.uefa.com/resources/026d-135c7f4214f2-ea5973b7e2cb-1000/format/wide1/manchester_united_v_villarreal_-_uefa_champions_league_-_group_f_-_old_trafford.jpeg?imwidth=2048');
+INSERT INTO  Fotos (enlaceFoto) VALUES ('https://editorial.uefa.com/resources/0278-15c59d96fb8b-fc80382a4953-1000/format/wide1/england_v_germany_final_-_uefa_women_s_euro_2022.jpeg?imwidth=2048');
+INSERT INTO  Fotos (enlaceFoto) VALUES ('https://editorial.uefa.com/resources/027b-16803137f87a-b77e33205d6c-1000/format/wide1/england_v_austria_group_a_-_uefa_women_s_euro_2022.jpeg?imwidth=2048');
+INSERT INTO  Fotos (enlaceFoto) VALUES ('https://editorial.uefa.com/resources/0275-151c93214327-d41072427e25-1000/format/wide1/official_uefa_euro_2024_logo_and_brand_launch.jpeg?imwidth=2048');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/2014._Camp_Nou._M%C3%A9s_que_un_club._Barcelona_B40.jpg/1920px-2014._Camp_Nou._M%C3%A9s_que_un_club._Barcelona_B40.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Stadio_Olimpico_%28Roma%2C_ITA%29.jpg/1280px-Stadio_Olimpico_%28Roma%2C_ITA%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/PSG-Lyon_Parc_des_Princes_02.jpg/1280px-PSG-Lyon_Parc_des_Princes_02.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Olympiastadion_Berlin_Sep-2015.jpg/1024px-Olympiastadion_Berlin_Sep-2015.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/London_Wembley.jpg/1024px-London_Wembley.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/a/a9/Carlo_Ancelotti_2016_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES  ('https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/CSKA-RM18_%2824%29.jpg/245px-CSKA-RM18_%2824%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/7/73/Federico_Valverde_2021_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Karim_Benzema_wearing_Real_Madrid_home_kit_2021-2022.jpg/245px-Karim_Benzema_wearing_Real_Madrid_home_kit_2021-2022.jpg');
+INSERT INTO Fotos (enlaceFoto)VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/ISL-HRV_%287%29.jpg/245px-ISL-HRV_%287%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Ferland_Mendy_2017.jpg/220px-Ferland_Mendy_2017.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Xavi_Hernandez_%2831521652051%29.jpg/250px-Xavi_Hernandez_%2831521652051%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/2019147183134_2019-05-27_Fussball_1.FC_Kaiserslautern_vs_FC_Bayern_M%C3%BCnchen_-_Sven_-_1D_X_MK_II_-_0228_-_B70I8527_%28cropped%29.jpg/230px-2019147183134_2019-05-27_Fussball_1.FC_Kaiserslautern_vs_FC_Bayern_M%C3%BCnchen_-_Sven_-_1D_X_MK_II_-_0228_-_B70I8527_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Ferran_Torres_2019.png/245px-Ferran_Torres_2019.png');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/FC_Red_Bull_Salzburg_gegen_CF_Barcelona_%28Testspiel_4._August_2021%29_45.jpg/200px-FC_Red_Bull_Salzburg_gegen_CF_Barcelona_%28Testspiel_4._August_2021%29_45.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://images.daznservices.com/di/library/DAZN_News/9d/be/pablo-torre-real-racing-club_168zmvq4euuvq18chy0bhqq1zh.jpeg?t=243069284');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://st1.uvnimg.com/9c/28/4b5678b44648a5ab92c85fa5a708/gettyimages-1344114955.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/3/3b/2022-07-30_Fu%C3%9Fball%2C_M%C3%A4nner%2C_DFL-Supercup%2C_RB_Leipzig_-_FC_Bayern_M%C3%BCnchen_1DX_3204_by_Stepro.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Sadio_Man%C3%A9_Senegal.jpg/245px-Sadio_Man%C3%A9_Senegal.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Jamal_Musiala_2022_%28cropped%29.jpg/245px-Jamal_Musiala_2022_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Serge_Gnabry_Training_2019-09-01_FC_Bayern_Muenchen-1_%28cropped%29.jpg/250px-Serge_Gnabry_Training_2019-09-01_FC_Bayern_Muenchen-1_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/20180602_FIFA_Friendly_Match_Austria_vs._Germany_Manuel_Neuer_850_0723.jpg/245px-20180602_FIFA_Friendly_Match_Austria_vs._Germany_Manuel_Neuer_850_0723.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/FC_Salzburg_gegen_FC_Bayern_M%C3%BCnchen_%28Championsleague_Achtelfinale_Hinspiel_16._Februar_2022%29_33.jpg/225px-FC_Salzburg_gegen_FC_Bayern_M%C3%BCnchen_%28Championsleague_Achtelfinale_Hinspiel_16._Februar_2022%29_33.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Stefano_Pioli.jpg/245px-Stefano_Pioli.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Zlatan_Ibrahimovi%C4%87_June_2018.jpg/220px-Zlatan_Ibrahimovi%C4%87_June_2018.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Rafael_Le%C3%A3o2022.jpg/220px-Rafael_Le%C3%A3o2022.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Olivier_Giroud_2018.jpg/230px-Olivier_Giroud_2018.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Charles_De_Ketelaere_2022_Salzburg_vs_AC_Milan_2022-09-06.jpg/245px-Charles_De_Ketelaere_2022_Salzburg_vs_AC_Milan_2022-09-06.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Divock_Origi_Liverpool_vs_Mainz_%28cropped%29.jpg/245px-Divock_Origi_Liverpool_vs_Mainz_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Christophe_Galtier_%2803-08-2011%29.jpg/245px-Christophe_Galtier_%2803-08-2011%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Lionel_Messi_20180626.jpg/245px-Lionel_Messi_20180626.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Bra-Cos_%281%29_%28cropped%29.jpg/225px-Bra-Cos_%281%29_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/2019-07-17_SG_Dynamo_Dresden_vs._Paris_Saint-Germain_by_Sandro_Halank%E2%80%93129_%28cropped%29.jpg/220px-2019-07-17_SG_Dynamo_Dresden_vs._Paris_Saint-Germain_by_Sandro_Halank%E2%80%93129_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Russia-Spain_2017_%286%29.jpg/225px-Russia-Spain_2017_%286%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/VitinhaPSG.jpg/245px-VitinhaPSG.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Ser-Swi_%2826%29.jpg/200px-Ser-Swi_%2826%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Fu%C3%9Fballl%C3%A4nderspiel_%C3%96sterreich-Ukraine_%2801.06.2012%29_43.jpg/245px-Fu%C3%9Fballl%C3%A4nderspiel_%C3%96sterreich-Ukraine_%2801.06.2012%29_43.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Mateu_Lahoz.jpg/245px-Mateu_Lahoz.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Zen-Molde_%281%29.jpg/245px-Zen-Molde_%281%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Cl%C3%A9ment_Turpin_2016_%28cropped%29.jpg/245px-Cl%C3%A9ment_Turpin_2016_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/CSKA-RM18_%2812%29_%28cropped%29.jpg/245px-CSKA-RM18_%2812%29_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/e/ee/Jesus_Vallejo.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Andriy_Lunin.jpg/255px-Andriy_Lunin.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Lucas_V%C3%A1zquez.jpg/250px-Lucas_V%C3%A1zquez.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Daniel_Carvajal_2015.jpg/220px-Daniel_Carvajal_2015.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://www.ecured.cu/images/thumb/9/91/Luis_Lopez.jpg/260px-Luis_Lopez.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://assets.laliga.com/squad/2022/t178/p432656/1024x1113/p432656_t178_2022_0_001_000.png');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Bar%C3%A7a_Napoli_03.jpg/245px-Bar%C3%A7a_Napoli_03.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Russia-Spain_2017_%2811%29.jpg/245px-Russia-Spain_2017_%2811%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Sergio_Busquets_2018.jpg/245px-Sergio_Busquets_2018.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Sergi_Roberto_2019_03_17_1.jpg/245px-Sergi_Roberto_2019_03_17_1.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://s.hs-data.com/bilder/spieler/gross/463799.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/2019-06-11_Fu%C3%9Fball%2C_M%C3%A4nner%2C_L%C3%A4nderspiel%2C_Deutschland-Estland_StP_2074_LR10_by_Stepro_%28cropped%29.jpg/245px-2019-06-11_Fu%C3%9Fball%2C_M%C3%A4nner%2C_L%C3%A4nderspiel%2C_Deutschland-Estland_StP_2074_LR10_by_Stepro_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://img.fcbayern.com/image/upload/t_cms-1x1-seo/v1627302829/cms/public/images/fcbayern-com/players/spielerportraits/ganzkoerper/kingsley_coman.png');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://assets-es.imgfoot.com/dayot-upamecano-2122-618cd11e265ba.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/c/c0/Deligt-juventus-2019_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://assets-es.imgfoot.com/media/cache/1200x1200/noussair-mazraoui-2122-4-62739fccd70bd.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/8/84/2019147183738_2019-05-27_Fussball_1.FC_Kaiserslautern_vs_FC_Bayern_M%C3%BCnchen_-_Sven_-_1D_X_MK_II_-_0363_-_B70I8662_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://i.guim.co.uk/img/media/a34d307657aa198c0b55e4ee675a6610e6c663d0/431_322_2156_1294/master/2156.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=2e432437b085ecf4578943807eb42c39');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://i0.wp.com/soycalcio.com/wp-content/uploads/2021/12/Junior-Messias-Milan-Genoa.jpeg?fit=1600%2C1130');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://assets-es.imgfoot.com/media/cache/1200x1200/brahim-diaz-618a96ddf0d03.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://media.gettyimages.com/id/1235251342/es/foto/ismael-bennacer-of-ac-milan-warm-up-prior-to-the-serie-a-match-between-ac-milan-and-ss-lazio.jpg?s=612x612&w=gi&k=20&c=uM87amsh1PxiCznQaqezxib8FXhbYJG-VxlIG7UEehY=');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/FC_Salzburg_vs._AC_Mailand_%28UEFA_Championsleague_2022-09-06%29_60_%28cropped%29.jpg/800px-FC_Salzburg_vs._AC_Mailand_%28UEFA_Championsleague_2022-09-06%29_60_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://m.footballdatabase.eu/images/photos/players/a_306/306366.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Liver-RM_%288%29_%28cropped%29.jpg/245px-Liver-RM_%288%29_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/2019-07-17_SG_Dynamo_Dresden_vs._Paris_Saint-Germain_by_Sandro_Halank%E2%80%93505_%28cropped%29.jpg/245px-2019-07-17_SG_Dynamo_Dresden_vs._Paris_Saint-Germain_by_Sandro_Halank%E2%80%93505_%28cropped%29.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/2020-03-10_Fu%C3%9Fball%2C_M%C3%A4nner%2C_UEFA_Champions_League_Achtelfinale%2C_RB_Leipzig_-_Tottenham_Hotspur_1DX_3670_by_Stepro.jpg/245px-2020-03-10_Fu%C3%9Fball%2C_M%C3%A4nner%2C_UEFA_Champions_League_Achtelfinale%2C_RB_Leipzig_-_Tottenham_Hotspur_1DX_3670_by_Stepro.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://m.footballdatabase.eu/images/photos/players/2020-2021/a_90/90608.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://depor.com/resizer/h4NAfxxjTA3GU0Xx0CiZ5QkTD9Y=/580x330/smart/filters:format(jpeg):quality(75)/cloudfront-us-east-1.images.arcpublishing.com/elcomercio/SR6OCWPXIZGLVGXLYQDIK4SF3Q.jpg');
+INSERT INTO Fotos (enlaceFoto) VALUES ('https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Danilo_Pereira_PSG.jpg/220px-Danilo_Pereira_PSG.jpg');
+
+
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Carlo','Ancelotti',11);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Toni','Kroos',12);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Federico','Valverde',13);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Karim','Benzema',14);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Luka','Modrić',15);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Ferland','Mendy',16);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Álvaro','Odriozola',46);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Jesús','Vallejo', 47);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Andriy','Lunin',48);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Lucas','Vázquez', 49);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Dani','Carvajal', 50);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Luis','López', 51);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Xavi','Hernández',17);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Robert','Lewandowski',18);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Ferran','Torres',19);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Ronald','Araújo',20);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Pablo','Torre',21);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Andreas','Christensen', 22 );
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Eric','García', 52 );
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Iñaki','Peña',  53);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Jordi','Alba', 54 );
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Sergio','Busquets',  55);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Sergio','Roberto',  56);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Alejandro','Baldé',  57);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Julian','Nagelsmann',23);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Sadio','Mané',24);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Jamal','Musiala',25);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Serge','Gnabry', 26 );
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Manuel','Neuer', 27 );
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Thomas','Müller', 28);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Leon','Goretzka', 58);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Kingsley','Coman',  59);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Dayot','Upamecano',  60);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Matthijs','de Ligt',  61);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Noussair','Mazraoui',  62);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Sven','Ulreich',  63);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Stefano','Pioli', 29 );
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Zlatan','Ibrahimović', 30);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Rafael','Leão', 31);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Olivier','Giroud', 32);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Charles','De Ketelaere', 33);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Divock','Origi', 34);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Fikayo','Tomori', 64 );
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Junior','Messias',  65);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Brahim','Díaz',  66);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Ismaël','Bennacer',  67);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Tommaso','Pobega',  68);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Yacine','Adli',  69);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Christophe','Galtier',35);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Messi','Lionel',36);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Neymar','Santos',37);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Kylian','Mbappé',38);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Sergio','Ramos',39);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Vítor','Ferreira',40);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Keylor','Navas',  70);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Marco','Verratti',  71);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Nordi','Mukiele',  72);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Pablo','Sarabia',  73);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Nuno','Mendes',  74);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Danilo','Pereira',75);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Felix','Brych',41);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Felix','Zwayer',42);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Antonio','Mateu',43);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Deniz','Aytekin',44);
+INSERT INTO Personas (nombre,apellido,idFoto) VALUES ('Clément','Turpin',45);
+
+
+
+INSERT INTO Etapas (nombre) VALUES ('clasificado');
+INSERT INTO Etapas (nombre) VALUES ('eliminado');
+INSERT INTO Etapas (nombre) VALUES ('finalista');
+INSERT INTO Etapas (nombre) VALUES ('campeon');
+
+
+INSERT INTO TiposEstadoJugador(idTiposEstadoJugador, nombre)VALUES(1, 'lesionado');
+INSERT INTO TiposEstadoJugador(idTiposEstadoJugador, nombre)VALUES(2, 'retirado');
+INSERT INTO TiposEstadoJugador(idTiposEstadoJugador, nombre)VALUES(3, 'activo');
+INSERT INTO TiposEstadoJugador(idTiposEstadoJugador, nombre)VALUES(4, 'sancionado');
+
+
+
+INSERT INTO Climas (Ambiente, Viento, Humedad, EstadoCampo) VALUES ('lluvioso','20Km/H','82%', 'humedo');
+INSERT INTO Climas (Ambiente, Viento, Humedad, EstadoCampo) VALUES ('soleado','12Km/H','50%', 'seco');
+INSERT INTO Climas (Ambiente, Viento, Humedad, EstadoCampo) VALUES ('polar','15Km/H','90%', 'mojado');
+INSERT INTO Climas (Ambiente, Viento, Humedad, EstadoCampo) VALUES ('tropical','9Km/H','25%', 'seco');
+INSERT INTO Climas (Ambiente, Viento, Humedad, EstadoCampo) VALUES ('templado','17Km/H','30%', 'humedo');
+
+
+
+INSERT INTO TiposEstadoPartido(idTiposEstadoPartido, nombre)VALUES(1, 'disputado');
+INSERT INTO TiposEstadoPartido(idTiposEstadoPartido, nombre)VALUES(2, 'en disputa');
+INSERT INTO TiposEstadoPartido(idTiposEstadoPartido, nombre)VALUES(3, 'cancelado');
+
+
+INSERT INTO TiposMultimedia(idTipoMultimedia, nombre)VALUES(1,'imagen');
+INSERT INTO TiposMultimedia(idTipoMultimedia, nombre)VALUES(2,'video');
+INSERT INTO TiposMultimedia(idTipoMultimedia, nombre)VALUES(3,'gif');
+
+
+INSERT INTO TipoAcciones(idTipoAccion, nombre)VALUES(1, 'Ataque');
+INSERT INTO TipoAcciones(idTipoAccion, nombre)VALUES(2, 'Defensa');
+INSERT INTO TipoAcciones(idTipoAccion, nombre)VALUES(3, 'Asistencia');
+INSERT INTO TipoAcciones(idTipoAccion, nombre)VALUES(4, 'Amonestacion');
+INSERT INTO TipoAcciones(idTipoAccion, nombre)VALUES(5, 'posesion');
+INSERT INTO TipoAcciones(idTipoAccion, nombre)VALUES(6, 'otros');
+
+
+
+INSERT INTO JuecesRoles (nombre ) VALUES ('Arbitro principal');
+INSERT INTO JuecesRoles (nombre ) VALUES ('Arbitro asistente');
+INSERT INTO JuecesRoles (nombre ) VALUES ('cuarto árbitro');
+INSERT INTO JuecesRoles (nombre ) VALUES ('Arbitro asistente adicional');
+
+
+
+INSERT INTO Paises (nombrePais) VALUES ('España');
+INSERT INTO Paises (nombrePais) VALUES ('Alemania');
+INSERT INTO Paises (nombrePais) VALUES ('Francia');
+INSERT INTO Paises (nombrePais) VALUES ('Suiza');
+INSERT INTO Paises (nombrePais) VALUES ('Italia');
+INSERT INTO Paises (nombrePais) VALUES ('Inglaterra');
+
+
+
+INSERT INTO Ciudades (nombreCiudad, idPais) VALUES ('Barcelona',1);
+INSERT INTO Ciudades (nombreCiudad, idPais) VALUES ('Berlin',2);
+INSERT INTO Ciudades (nombreCiudad, idPais) VALUES ('Paris',3);
+INSERT INTO Ciudades (nombreCiudad, idPais) VALUES ('Berna',4);
+INSERT INTO Ciudades (nombreCiudad, idPais) VALUES ('Roma',5);
+INSERT INTO Ciudades (nombreCiudad, idPais) VALUES ('Londres',6);
+
+
+
+
+
+
+INSERT INTO Equipos (nombre,copas,idEtapa,idPais) VALUES ('REAL MADRID',7,3,1);
+INSERT INTO Equipos (nombre,copas,idEtapa,idPais) VALUES ('BARCELONA',10,2,1);
+INSERT INTO Equipos (nombre,copas,idEtapa,idPais) VALUES ('BAYERN DE MÚNICH',1,4,2);
+INSERT INTO Equipos (nombre,copas,idEtapa,idPais) VALUES ('MILAN',2,1,5);
+INSERT INTO Equipos (nombre,copas,idEtapa,idPais) VALUES ('PARÍS SAINT-GERMAIN',8,3,3);
+
+
+
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (2,8,1);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (3,10,1);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (4,11,1);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (5,4,1);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (6,7,1);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (7 , 15,1 );
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 8, 9, 1);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 9, 20, 1);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 10, 5, 1);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 11, 1, 1);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (12 , 13,1 );
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 14, 5,2 );
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 15, 6,2 );
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 16, 10,2 );
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 17,9 , 2);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 18,4 , 2);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 19, 7, 2);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 20, 8, 2);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 21, 13, 2);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 22, 11, 2);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 23,12 , 2);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 24, 16, 2);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 26, 80, 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 27, 70, 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 28, 25, 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES ( 29 , 9 ,3 );
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  30, 10 , 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  31, 11 , 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  32, 13 , 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  33,  2, 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  34,  4, 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  35, 1 , 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  36,  5, 3);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  38, 9 ,4 );
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  39, 10 , 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  40, 11 , 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  41, 12 , 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  42,  15, 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  43, 8 , 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  44,  7, 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  45,  6, 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  46,  3, 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  47,  70, 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  48, 25 , 4);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  50, 16 ,5 );
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  51,  6, 5);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  52, 4 , 5);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  53, 40 ,5 );
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  54,  67, 5);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  55,  8, 5);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  56, 9 , 5);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  57, 10 , 5);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  58,  11, 5);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  59, 3 , 5);
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES (  60, 1 , 5);
+
+
+
+INSERT INTO Entrenadores (idPersona,añosExperiencia,idEquipo)  VALUES ( 1, 8, 1);
+INSERT INTO Entrenadores (idPersona,añosExperiencia,idEquipo)  VALUES ( 13, 10, 2);
+INSERT INTO Entrenadores (idPersona,añosExperiencia,idEquipo)  VALUES ( 25, 9, 3);
+INSERT INTO Entrenadores (idPersona,añosExperiencia,idEquipo)  VALUES ( 37, 2, 4);
+INSERT INTO Entrenadores (idPersona,añosExperiencia,idEquipo)  VALUES ( 49, 3, 5);
+
+
+
+INSERT INTO Jueces (idPersona,idRol) VALUES (61 ,1 );
+INSERT INTO Jueces (idPersona,idRol) VALUES ( 62,3 );
+INSERT INTO Jueces (idPersona,idRol) VALUES ( 63, 4);
+INSERT INTO Jueces (idPersona,idRol) VALUES ( 64, 2);
+INSERT INTO Jueces (idPersona,idRol) VALUES ( 65,1 );
+
+
+
+
+INSERT INTO EstadosJugador (fechaInicio,fechaFin,idPersona,idTiposEstadoJugador) VALUES ('2019-10-29','2020-01-10',10,2);
+INSERT INTO EstadosJugador (fechaInicio,fechaFin,idPersona,idTiposEstadoJugador) VALUES ('2020-11-26','2021-03-12',7,1);
+INSERT INTO EstadosJugador (fechaInicio,fechaFin,idPersona,idTiposEstadoJugador) VALUES ('2022-08-14','2022-09-10',32,1);
+INSERT INTO EstadosJugador (fechaInicio,fechaFin,idPersona,idTiposEstadoJugador) VALUES ('2021-03-29','2021-05-10',30,4);
+INSERT INTO EstadosJugador (fechaInicio,fechaFin,idPersona,idTiposEstadoJugador) VALUES ('2022-02-14','2022-03-14',54,3);
+
+
+INSERT INTO Acciones(idAccion,nombreAccion, idTipoAccion)VALUES(1, 'gol pie izquierdo', 1);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(2, 'gol pie derecho', 1);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(3, 'gol de cabeza', 1);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(4, 'gol pena maxima', 1);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(5, 'gol tiro libre', 1);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(6, 'barrida', 2);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(7, 'despeje', 2);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(8, 'atajada', 2);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(9,  'asistencia tiro de esquina', 3);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(10, 'asistencia pase pie izquierdo', 3);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(11, 'asistencia pase pie derecho', 3);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(12, 'asistencia pase largo', 3);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(13, 'asistencia tiro libre', 3);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(14, 'tarjeta amarilla', 4);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(15, 'tarjeta roja', 4);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(16, 'expulsion', 4);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(17, 'pase pie izquierdo', 5);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(18, 'pase pie derecho', 5);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(19, 'pase largo', 5);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(20, 'sustituido', 6);
+INSERT INTO Acciones(idAccion, nombreAccion, idTipoAccion)VALUES(21, 'autogol', 6);
+
+
+INSERT INTO Estadios (nombre,idCiudad,idFoto) VALUES ('Camp Nou',1 , 6);
+INSERT INTO Estadios (nombre,idCiudad,idFoto) VALUES ('Olimpico de Roma', 5 ,7 );
+INSERT INTO Estadios (nombre,idCiudad,idFoto) VALUES ('Parque de los Principes',3 ,8 );
+INSERT INTO Estadios (nombre,idCiudad,idFoto) VALUES ('Olimpico de Berlin',2 , 9);
+INSERT INTO Estadios (nombre,idCiudad,idFoto) VALUES ('Wembley',6 ,10);
+
+INSERT INTO TipoPartido (nombreTipoPartido) VALUES ('Repechaje');
+INSERT INTO TipoPartido (nombreTipoPartido) VALUES ('Fase de grupos');
+INSERT INTO TipoPartido (nombreTipoPartido) VALUES ('Fase eliminatorias');
+
+
+INSERT INTO Partidos (fecha,idEstadio,idClima,idTipoPartido) VALUES ('2020-10-19',3,2,2);
+INSERT INTO Partidos (fecha,idEstadio,idClima, idTipoPartido) VALUES ('2020-08-05',2,1,1);
+INSERT INTO Partidos (fecha,idEstadio,idClima, idTipoPartido) VALUES ('2020-11-29',1,3,3);
+INSERT INTO Partidos (fecha,idEstadio,idClima, idTipoPartido) VALUES ('2020-01-09',3,5,1);
+INSERT INTO Partidos (fecha,idEstadio,idClima, idTipoPartido) VALUES ('2020-07-15',5,4,2);
+
+
+INSERT INTO RegistrosEstadoPartido (fechaRegistroPartido, fechaInicioPartido, idPartido, idTiposEstadoPartido) VALUES ('2020-01-01','2020-02-02',1,2);
+INSERT INTO RegistrosEstadoPartido (fechaRegistroPartido, fechaInicioPartido, idPartido, idTiposEstadoPartido) VALUES ('2021-05-10','2021-06-10',3,2);
+INSERT INTO RegistrosEstadoPartido (fechaRegistroPartido, fechaInicioPartido, idPartido, idTiposEstadoPartido) VALUES ('2022-09-15','2022-10-16',4,3);
+INSERT INTO RegistrosEstadoPartido (fechaRegistroPartido, fechaInicioPartido, idPartido, idTiposEstadoPartido) VALUES ('2022-10-09','2022-11-10',5,1);
+INSERT INTO RegistrosEstadoPartido (fechaRegistroPartido, fechaInicioPartido, idPartido, idTiposEstadoPartido) VALUES ('2022-06-07','2022-07-08',1,2);
+
+
+INSERT INTO Registros (tiempoRegistro,idPartido,idAccion,idPersona) VALUES ('00:45:30',2,3,27);
+INSERT INTO Registros (tiempoRegistro,idPartido,idAccion,idPersona) VALUES ('00:55:25',1,1,15);
+INSERT INTO Registros (tiempoRegistro,idPartido,idAccion,idPersona) VALUES ('00:30:25',2,2,30);
+INSERT INTO Registros (tiempoRegistro,idPartido,idAccion,idPersona) VALUES ('00:15:00',3,3,16);
+INSERT INTO Registros (tiempoRegistro,idPartido,idAccion,idPersona) VALUES ('00:28:26',5,3,40);
+
+
+INSERT INTO MejoresMomentos (IDtipoMultimedia,IDpartido) VALUES (1,2);
+INSERT INTO MejoresMomentos (IDtipoMultimedia,IDpartido) VALUES (3,3);
+INSERT INTO MejoresMomentos (IDtipoMultimedia,IDpartido) VALUES (2,4);
+INSERT INTO MejoresMomentos (IDtipoMultimedia,IDpartido) VALUES (1,3);
+INSERT INTO MejoresMomentos (IDtipoMultimedia,IDpartido) VALUES (3,2);
+
+
+INSERT INTO TiposEstadoEquipo (nombreEstadoEquipo) VALUES ('Gano');
+INSERT INTO TiposEstadoEquipo (nombreEstadoEquipo) VALUES ('Perdio');
+INSERT INTO TiposEstadoEquipo (nombreEstadoEquipo) VALUES ('Empato');
+
+
+INSERT INTO EstadosEquipo (fechaInicioEstado,idEquipo,idTiposEstadoEquipo) VALUES ('2022-05-10',4,1);
+INSERT INTO EstadosEquipo (fechaInicioEstado,idEquipo,idTiposEstadoEquipo) VALUES ('2022-06-11',3,2);
+INSERT INTO EstadosEquipo (fechaInicioEstado,idEquipo,idTiposEstadoEquipo) VALUES ('2022-10-10',2,3);
+INSERT INTO EstadosEquipo (fechaInicioEstado,idEquipo,idTiposEstadoEquipo) VALUES ('2022-09-25',1,1);
+INSERT INTO EstadosEquipo (fechaInicioEstado,idEquipo,idTiposEstadoEquipo) VALUES ('2022-01-04',5,1);
+
+
+
+INSERT INTO Participaciones (idPartido,idEquipo) VALUES (2,3);
+INSERT INTO Participaciones (idPartido,idEquipo) VALUES (1,4);
+INSERT INTO Participaciones (idPartido,idEquipo) VALUES (3,5);
+INSERT INTO Participaciones (idPartido,idEquipo) VALUES (4,4);
+INSERT INTO Participaciones (idPartido,idEquipo) VALUES (2,1);
+
+
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (2,61);
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (2,63);
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (2,64);
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (2,65);
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (2,62);
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (3,61);
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (3,63);
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (3,64);
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (3,65);
+INSERT INTO PartidosJuzgados (idPartido,idPersona) VALUES (3,62);
+
+

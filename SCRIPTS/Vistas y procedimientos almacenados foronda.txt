@@ -1,0 +1,73 @@
+CREATE VIEW arbitrosPrincipales 
+AS
+SELECT Personas.nombre,Personas.apellido
+FROM   Jueces INNER JOIN Personas ON Jueces.idPersona = Personas.idPersona
+WHERE Jueces.idRol = (SELECT idRol
+FROM JuecesRoles
+WHERE nombre = ‘Arbitro principal’)
+
+CREATE VIEW EquipoCampeon
+AS
+SELECT nombre
+FROM Equipos
+WHERE  idEtapa = (SELECT  idEtapa
+		      FROM Etapas
+		      WHERE nombre =’campeon’)
+
+CREATE VIEW EntrenadorRealMadrid
+AS
+SELECT  nombre,apellido
+FROM Personas
+WHERE idPersona = (SELECT idPersona
+			FROM Entrenadores
+WHERE idEquipo =(SELECT idEquipo
+FROM Equipos
+WHERE nombre =’REAL MADRID’)) 
+
+
+
+
+
+CREATE PROCEDURE InsertarJugador (idPersona INT, dorsal INT, idEquipo )
+AS
+$CODE$
+BEGIN
+RAISE NOTICE ‘Insertando jugador’;
+INSERT INTO Jugadores (idPersona,dorsal,idEquipo) VALUES(idPersona,dorsal,idEquipo);
+RAISE NOTICE  ‘Jugador Insertado’;
+END
+$CODE$
+LANGUAGE 'plpgsql'; 
+CREATE PROCEDURE  EstadioPorCiudad (idCiudad INT)
+AS 
+$CODE$
+DECLARE
+Ciudad INT  :=idCiudad;
+BEGIN 
+SELECT nombre
+FROM Estadios
+WHERE idCiudad =Ciudad;
+END
+$CODE$
+LANGUAGE 'plpgsql'; 
+
+
+
+
+CREATE PROCEDURE JugadorExistente( idPersona INT)
+AS 
+$CODE$
+DECLARE 
+Jugador INT  :=idPersona;
+BEGIN
+SELECT idPersona
+FROM Jugadores
+WHERE idEquipo = (SELECT idEquipo
+			FROM Equipos);
+IF Jugadores.idPersona <> Jugador   THEN 
+RAISE NOTICE ‘El jugador’, Jugador, ‘no pertenece a ningún equipo’
+ELSE
+RAISE NOTICE ‘El jugador pertenece al equipo’, Equipos.idEquipo;
+END
+$CODE$
+LANGUAGE 'plpgsql'; 
